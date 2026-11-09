@@ -1,0 +1,3 @@
+id,file,condition,reference,machine,urgency
+c1,c1_quiet.wav,quiet,"CNC machine ka spindle bahut garam ho raha hai aur awaaz aa rahi hai production ruka hua hai",CNC,high
+c1n,c1_noisy.wav,noisy,"CNC machine ka spindle bahut garam ho raha hai aur awaaz aa rahi hai production ruka hua hai",CNC,high

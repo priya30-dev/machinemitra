@@ -1,0 +1,17 @@
+{
+  "_note": "DEMO DATA. Fictional machines for the MachineMitra demo.",
+  "machines": [
+    {"id": "M1", "factory_id": "F1", "name": "CNC lathe #1", "machine_type": "CNC machine",
+     "model": "Demo CNC TL-250", "installed": 2019},
+    {"id": "M2", "factory_id": "F1", "name": "Air compressor", "machine_type": "air compressor",
+     "model": "Demo AC-15HP", "installed": 2021},
+    {"id": "M3", "factory_id": "F2", "name": "Hydraulic press 100T", "machine_type": "hydraulic press",
+     "model": "Demo HP-100", "installed": 2016},
+    {"id": "M4", "factory_id": "F2", "name": "Main motor panel", "machine_type": "electric motor",
+     "model": "Demo MCC-3", "installed": 2018},
+    {"id": "M5", "factory_id": "F3", "name": "Injection moulding #2", "machine_type": "injection moulding machine",
+     "model": "Demo IM-180", "installed": 2020},
+    {"id": "M6", "factory_id": "F3", "name": "Packing conveyor", "machine_type": "conveyor",
+     "model": "Demo CV-12", "installed": 2022}
+  ]
+}

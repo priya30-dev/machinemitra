@@ -1,0 +1,22 @@
+{
+  "_note": "DEMO DATA. These technicians and locations are fictional, created for the MachineMitra demo.",
+  "factories": [
+    {"id": "F1", "name": "Demo factory – Foundry Nagar, Agra", "lat": 27.2046, "lon": 78.0350},
+    {"id": "F2", "name": "Demo factory – Sikandra Industrial Area, Agra", "lat": 27.2152, "lon": 77.9520},
+    {"id": "F3", "name": "Demo factory – Nunhai Industrial Estate, Agra", "lat": 27.1900, "lon": 78.0480}
+  ],
+  "technicians": [
+    {"id": "T1", "name": "Ramesh Yadav", "skills": ["mechanical", "pneumatic"], "language": "hi-en",
+     "lat": 27.1980, "lon": 78.0200, "available": true, "rating": 4.7},
+    {"id": "T2", "name": "Murugan S.", "skills": ["cnc", "plc_electronics"], "language": "ta-IN",
+     "lat": 27.2100, "lon": 77.9700, "available": true, "rating": 4.8},
+    {"id": "T3", "name": "Santosh Patil", "skills": ["hydraulic", "mechanical", "pneumatic"], "language": "mr-IN",
+     "lat": 27.1750, "lon": 78.0100, "available": true, "rating": 4.5},
+    {"id": "T4", "name": "Subhajit Das", "skills": ["electrical", "plc_electronics"], "language": "bn-IN",
+     "lat": 27.2200, "lon": 78.0500, "available": true, "rating": 4.6},
+    {"id": "T5", "name": "Imran Qureshi", "skills": ["electrical", "mechanical", "welding"], "language": "hi-IN",
+     "lat": 27.1700, "lon": 78.0600, "available": false, "rating": 4.4},
+    {"id": "T6", "name": "Kuldeep Singh", "skills": ["welding", "mechanical", "hydraulic"], "language": "pa-IN",
+     "lat": 27.2300, "lon": 77.9900, "available": true, "rating": 4.3}
+  ]
+}

@@ -1,0 +1,19 @@
+# secrets
+.env
+.streamlit/secrets.toml
+
+# runtime data
+.cache/
+eval/results.csv
+eval/audio/
+samples/*.wav
+samples/*.mp3
+samples/*.m4a
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
