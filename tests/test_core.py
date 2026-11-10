@@ -23,6 +23,7 @@ def isolated(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CACHE_DIR", str(tmp_path))
     monkeypatch.setattr(config, "GNANI_API_KEY", "test-key")
     monkeypatch.setattr(config, "EVON_BASE_URL", "")
+    monkeypatch.setattr(config, "EVON_API", "openai")   # ignore any EVON_API set in the terminal
 
 
 class FakeResp:
@@ -346,3 +347,54 @@ def test_follow_up_updates_same_ticket(monkeypatch):
     assert again.ticket_id == first.ticket_id and not again.escalation.escalate
     assert db.get_ticket(first.ticket_id)["machine_type"] == "lathe"
     assert len(db.list_tickets()) == 1
+
+
+def test_evon_ollama_mode(monkeypatch):
+    monkeypatch.setattr(config, "EVON_BASE_URL", "http://ollama.test")
+    monkeypatch.setattr(config, "EVON_API", "ollama")
+    sent = {}
+    answer = json.dumps({"machine_type": "hydraulic press", "urgency": "high", "skills_required": ["hydraulic"]})
+
+    class Stream:
+        status_code, text = 200, ""
+
+        def __init__(self, chunks):
+            self.chunks = chunks
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def iter_lines(self):
+            for c in self.chunks:
+                yield json.dumps(c).encode()
+
+    def fake_post(url, **kw):
+        sent.update(url=url, body=kw["json"], stream=kw.get("stream"))
+        half = len(answer) // 2   # the answer arrives in pieces, like a real stream
+        return Stream([{"message": {"content": answer[:half]}}, {"message": {"content": answer[half:]}, "done": True}])
+
+    monkeypatch.setattr(evon.requests, "post", fake_post)
+    t = evon.make_ticket("hydraulic press mein oil leak hai")
+    assert sent["url"] == "http://ollama.test/api/chat" and sent["stream"] is True
+    assert sent["body"]["think"] is False and sent["body"]["format"] == "json" and sent["body"]["keep_alive"]
+    assert t.reasoner == "evon" and t.machine_type == "hydraulic press"
+
+    monkeypatch.setattr(evon.requests, "post", lambda url, **kw: Stream([{"message": {"content": ""}, "done": True}]))
+    with pytest.raises(evon.EvonUnavailable):
+        evon.make_ticket("x")
+
+
+def test_evon_cnc_routing_and_hinglish_reply(monkeypatch):
+    monkeypatch.setattr(config, "EVON_BASE_URL", "http://evon.test")
+    ticket_json = {"machine_type": "CNC lathe", "urgency": "high", "skills_required": ["mechanical"],
+                   "owner_reply": "Samajh gaya, spindle garam hai.", "caller_language": "hi-IN"}
+    replies = iter([json.dumps(ticket_json), "சிஎன்சி"])
+    monkeypatch.setattr(evon.requests, "post",
+                        lambda url, **kw: FakeResp(body={"choices": [{"message": {"content": next(replies)}}]}))
+    r = pipeline.run(None, ".wav", FACTORY, downtime.DowntimeInputs(), speak_replies=False,
+                     transcript_override="CNC machine ka spindle bahut garam ho raha hai")
+    assert r.match.technician["id"] == "T2"                     # Murugan, the CNC specialist
+    assert r.caller_language == "hi-en" and "ji lagbhag" in r.owner_reply_text   # Hinglish, not Devanagari

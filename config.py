@@ -40,6 +40,9 @@ EVON_BASE_URL = _get("EVON_BASE_URL").rstrip("/")
 EVON_API_KEY = _get("EVON_API_KEY")
 EVON_MODEL = _get("EVON_MODEL", "evon")
 EVON_TIMEOUT = float(_get("EVON_TIMEOUT", "90"))
+# "openai" = llama.cpp llama-server or any OpenAI-compatible server; "ollama" = Ollama's own API
+# (lets us switch Evon's thinking off, which Ollama's OpenAI endpoint does not)
+EVON_API = _get("EVON_API", "openai").lower()
 
 # Credit protection for the public demo
 MAX_RUNS_PER_SESSION = int(_get("MAX_RUNS_PER_SESSION", "5"))

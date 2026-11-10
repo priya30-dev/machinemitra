@@ -30,16 +30,55 @@ def _headers() -> dict:
 def is_online(timeout: float = 4.0) -> bool:
     if not config.EVON_BASE_URL:
         return False
+    path = "/api/tags" if config.EVON_API == "ollama" else "/v1/models"
     try:
-        r = requests.get(f"{config.EVON_BASE_URL}/v1/models", headers=_headers(), timeout=timeout)
+        r = requests.get(f"{config.EVON_BASE_URL}{path}", headers=_headers(), timeout=timeout)
         return r.status_code == 200
     except requests.RequestException:
         return False
 
 
+def _chat_ollama(messages: list[dict], max_tokens: int, json_mode: bool) -> str:
+    """Ollama's native /api/chat with thinking switched off ("think": false).
+
+    The answer is STREAMED: free Cloudflare tunnels cut any request that sends
+    nothing for 100 s (HTTP 524), and streaming keeps bytes flowing.
+    keep_alive keeps Evon loaded on the GPU so later calls skip the reload."""
+    body = {"model": config.EVON_MODEL, "messages": messages, "stream": True, "think": False,
+            "keep_alive": "60m",
+            "options": {"temperature": 0.3, "top_p": 0.95, "num_predict": max_tokens}}
+    if json_mode:
+        body["format"] = "json"
+    parts = []
+    try:
+        with requests.post(f"{config.EVON_BASE_URL}/api/chat", headers=_headers(), json=body,
+                           stream=True, timeout=(15, config.EVON_TIMEOUT)) as r:
+            if r.status_code != 200:
+                raise EvonUnavailable(f"HTTP {r.status_code}: {r.text[:120]}")
+            for line in r.iter_lines():
+                if not line:
+                    continue
+                chunk = json.loads(line)
+                if chunk.get("error"):
+                    raise EvonUnavailable(str(chunk["error"])[:200])
+                parts.append((chunk.get("message") or {}).get("content") or "")
+                if chunk.get("done"):
+                    break
+    except requests.RequestException as e:
+        raise EvonUnavailable(str(e)[:200]) from e
+    except ValueError as e:
+        raise EvonUnavailable(f"Unreadable reply from Evon: {e}") from e
+    content = re.sub(r"<think>.*?</think>", "", "".join(parts), flags=re.S).strip()
+    if not content:
+        raise EvonUnavailable("Evon returned an empty answer")
+    return content
+
+
 def _chat(messages: list[dict], max_tokens: int = 900, json_mode: bool = False) -> str:
     if not config.EVON_BASE_URL:
         raise EvonUnavailable("EVON_BASE_URL is not set")
+    if config.EVON_API == "ollama":
+        return _chat_ollama(messages, max_tokens, json_mode)
     body = {
         "model": config.EVON_MODEL,
         "messages": messages,

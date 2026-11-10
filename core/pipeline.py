@@ -200,8 +200,13 @@ def run(audio: bytes | None, suffix: str, factory: dict, downtime: DowntimeInput
     if machine and ticket.machine_type in ("unknown", "unknown machine"):
         ticket.machine_type = machine["machine_type"]
         ticket.follow_up_questions = [q for q in ticket.follow_up_questions if "machine" not in q.lower()]
-    if ticket.reasoner != "evon" or ticket.caller_language not in language.NAMES:
+    # The script of the transcript is the best signal for Hindi vs Hinglish vs English,
+    # so our own detection wins there; for regional languages Evon's answer is kept.
+    if (ticket.reasoner != "evon" or ticket.caller_language not in language.NAMES
+            or lang in ("hi-en", "en-IN", "hi-IN")):
         ticket.caller_language = lang
+    if "cnc" in ticket.machine_type.lower():  # CNC faults go to a CNC specialist first
+        ticket.skills_required = ["cnc"] + [s for s in ticket.skills_required if s in ("plc_electronics", "electrical")]
     lang = result.caller_language = ticket.caller_language
     if danger.is_dangerous:  # rules can only raise safety, never lower it
         ticket.safety_risk, ticket.urgency = True, "critical"
