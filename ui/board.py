@@ -18,7 +18,7 @@ def _ticket_card(row: dict, directory: dict, settings: dict):
     sla_label, sla_state = sla.describe(row["due_at"], row["status"])
 
     head = urgency_pill(row["urgency"]) + pill(db.STATUS_LABELS[row["status"]], "eng") + \
-        pill(("⏱ " if sla_state != "met" else "✅ ") + sla_label, f"s-{sla_state}")
+        pill(("" if sla_state != "met" else "") + sla_label, f"s-{sla_state}")
     if row["escalated"]:
         head += pill("ESCALATED", "esc")
     title = f"#{row['id']} · {nice(m['name'] if m else row['machine_type'])} · {fac['name'] if fac else ''}"
@@ -39,7 +39,7 @@ def _ticket_card(row: dict, directory: dict, settings: dict):
                 st.map(pd.DataFrame([{"lat": fac["lat"], "lon": fac["lon"], "size": 60, "color": "#E8590C"},
                                      {"lat": tech["lat"], "lon": tech["lon"], "size": 40, "color": "#4c4fd6"}]),
                        latitude="lat", longitude="lon", size="size", color="color", zoom=11, height=220)
-                st.caption("🟠 factory · 🔵 technician (demo locations)")
+                st.caption("Orange: factory · Blue: technician (demo locations)")
 
             st.markdown("**Timeline**")
             for e in db.events(row["id"]):
@@ -54,7 +54,7 @@ def _ticket_card(row: dict, directory: dict, settings: dict):
                 st.rerun()
 
             if row["status"] != "fixed":
-                st.markdown("**🎙️ Technician voice update**")
+                st.markdown("**Technician voice update**")
                 st.caption('e.g. "Nikal gaya hoon", "Pahunch gaya, bearing kharab hai", "Machine theek ho gayi"')
                 upd = st.audio_input("Record update", key=f"upd_{row['id']}")
                 if upd is not None and st.button("Apply update", key=f"apply_{row['id']}") and can_go_live():
@@ -69,7 +69,7 @@ def _ticket_card(row: dict, directory: dict, settings: dict):
                                    f"({res.data.get('engine')}). Owner is told: {res.data.get('owner_message')}")
                         st.rerun()
             else:
-                st.markdown("**🧾 Service report**")
+                st.markdown("**Service report**")
                 if row.get("report"):
                     st.download_button("Download service report", actions.report_html(row["id"]),
                                        file_name=f"service_report_{row['id']}.html", mime="text/html",
@@ -89,7 +89,7 @@ def _ticket_card(row: dict, directory: dict, settings: dict):
 
 def render(settings: dict):
     directory = settings["directory"]
-    st.subheader("🧰 Technician board")
+    st.subheader("Technician board")
     f1, f2, f3 = st.columns(3)
     status = f1.selectbox("Status", ["All open", "All"] + db.STATUSES,
                           format_func=lambda s: db.STATUS_LABELS.get(s, s))

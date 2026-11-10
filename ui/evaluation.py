@@ -11,7 +11,7 @@ RESULTS = os.path.join(os.path.dirname(os.path.dirname(__file__)), "eval", "resu
 
 
 def render(settings: dict):
-    st.subheader("🧪 Evaluation")
+    st.subheader("Evaluation")
     st.markdown("We record the same complaints in a quiet room, on a noisy shop floor, and squeezed to 8 kHz "
                 "phone quality, then measure **word error rate** (lower is better) and whether the ticket got the "
                 "machine and urgency right.")

@@ -207,7 +207,7 @@ const convo = [
   ["Factory owner · Hinglish", "CNC machine ka spindle bahut garam ho raha hai, production ruka hua hai…",
    "Ticket ban gaya. CNC expert Murugan ji lagbhag ek ghante mein pahunchenge."],
   ["Factory owner · safety", "Panel se chingari nikal rahi hai, jalne ki smell aa rahi hai!",
-   "⚠ Main power turant band kijiye aur sabko machine se door rakhiye. Technician bhej rahe hain."],
+   "Main power turant band kijiye aur sabko machine se door rakhiye. Technician bhej rahe hain."],
   ["Factory owner · Tamil", "CNC மெஷின் ரொம்ப சூடாகுது, உற்பத்தி நின்றுவிட்டது.",
    "உங்கள் புகார் கிடைத்தது, நாங்கள் டெக்னீஷியனை அனுப்புகிறோம்."],
 ];

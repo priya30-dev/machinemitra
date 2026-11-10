@@ -37,7 +37,7 @@ def _stream_transcribe(raw: bytes, settings: dict) -> tuple[str, str | None, flo
     pcm = _pcm16k(raw, settings["telephony"])
     box = st.empty()
     phrases, lang = [], None
-    box.markdown('<div class="live-box">🎧 Listening through Prisma realtime…</div>', unsafe_allow_html=True)
+    box.markdown('<div class="live-box">Listening through Prisma realtime…</div>', unsafe_allow_html=True)
     for msg in stt_stream.stream_pcm(pcm, settings["languages"]):
         kind = msg.get("type")
         if kind == "speech_start":
@@ -81,23 +81,23 @@ def _show(r: pipeline.Result):
     t = r.ticket
 
     if r.danger:
-        st.error(f"⚠️ **Safety alert — {', '.join(r.danger)} reported.** {r.safety_alert_text}")
+        st.error(f"**Safety alert — {', '.join(r.danger)} reported.** {r.safety_alert_text}")
         if r.safety_alert_audio:
             st.audio(r.safety_alert_audio, format="audio/wav", autoplay=True)
     if r.escalation and r.escalation.escalate:
-        st.warning(f"🚨 **Escalated:** {r.escalation.reason}. Sent to the most senior matching technician.")
+        st.warning(f"**Escalated:** {r.escalation.reason}. Sent to the most senior matching technician.")
 
     tags = urgency_pill(t.urgency)
     tags += pill("Diagnosis: " + ("Gnani Evon v3.3" if t.reasoner == "evon" else "Rule-based fallback"), "eng")
     tags += pill("Caller language: " + language.NAMES.get(r.caller_language, r.caller_language), "eng")
     if r.noise:
-        tags += pill("🔉 " + r.noise.label, f"n-{r.noise.level}")
+        tags += pill("" + r.noise.label, f"n-{r.noise.level}")
     if r.machine:
-        tags += pill(f"📌 {r.machine['name']}", "eng")
+        tags += pill(f"{r.machine['name']}", "eng")
 
     col1, col2 = st.columns([3, 2], gap="large")
     with col1:
-        st.markdown(f"### 🎫 Ticket #{r.ticket_id} · {nice(t.machine_type)}")
+        st.markdown(f"### Ticket #{r.ticket_id} · {nice(t.machine_type)}")
         st.markdown(tags, unsafe_allow_html=True)
         if t.urgency_reason:
             st.caption(t.urgency_reason)
@@ -111,10 +111,10 @@ def _show(r: pipeline.Result):
         a.markdown("**Parts to carry**\n" + "\n".join(f"- {p}" for p in t.parts_to_carry or ["—"]))
         b.markdown("**Tools**\n" + "\n".join(f"- {p}" for p in t.tools_to_carry or ["—"]))
         if r.repeat_note:
-            st.warning("🔁 " + r.repeat_note)
+            st.warning("" + r.repeat_note)
 
     with col2:
-        st.markdown("##### 💸 Cost & impact")
+        st.markdown("##### Cost & impact")
         m1, m2 = st.columns(2)
         m1.metric("Downtime cost", f"{inr(r.cost_per_hour)}/hr")
         m2.metric("Loss until arrival", inr(r.expected_loss) if r.match else "—")
@@ -127,7 +127,7 @@ def _show(r: pipeline.Result):
         if r.match:
             tech = r.match.technician
             st.markdown(
-                f'<div class="mm-card"><b>👷 {tech["name"]}</b> · ⭐ {tech["rating"]}<br>'
+                f'<div class="mm-card"><b>{tech["name"]}</b> · {tech["rating"]}<br>'
                 f'Skills: {", ".join(tech["skills"])}<br>{r.match.distance_km} km away · ETA ~{r.match.eta_hours} h'
                 f'<br>Speaks: {language.NAMES.get(tech["language"], tech["language"])}</div>',
                 unsafe_allow_html=True)
@@ -135,18 +135,18 @@ def _show(r: pipeline.Result):
                 st.caption("Backup: " + ", ".join(f'{m.technician["name"]} ({m.eta_hours} h)' for m in r.alternatives))
         st.caption("Technicians are fictional demo data.")
 
-    st.markdown("#### 🔊 What the owner hears")
+    st.markdown("#### What the owner hears")
     st.write(r.owner_reply_text)
     if r.owner_reply_audio:
         st.audio(r.owner_reply_audio, format="audio/wav", autoplay=not r.danger)
     if r.first_aid:
-        st.markdown("#### 🩹 While you wait — safe checks")
+        st.markdown("#### While you wait — safe checks")
         for c in r.first_aid:
             st.markdown(f"- {c}")
         if r.first_aid_audio:
             st.audio(r.first_aid_audio, format="audio/wav")
         st.caption("Only checks that need no tools, no opening panels and no touching parts.")
-    st.markdown(f"#### 📲 Technician briefing ({language.NAMES.get(r.tech_brief_language, r.tech_brief_language)})")
+    st.markdown(f"#### Technician briefing ({language.NAMES.get(r.tech_brief_language, r.tech_brief_language)})")
     st.write(r.tech_brief_text)
     if r.tech_brief_audio:
         st.audio(r.tech_brief_audio, format="audio/wav")
@@ -166,11 +166,11 @@ def render(settings: dict, machine_from_qr: str | None):
     ids = [None] + [m["id"] for m in machines]
     default = ids.index(machine_from_qr) if machine_from_qr in ids else 0
     if machine_from_qr and default:
-        st.success(f"📌 Machine from QR sticker: **{db.machine(machine_from_qr)['name']}**. Just describe the problem.")
+        st.success(f"Machine from QR sticker: **{db.machine(machine_from_qr)['name']}**. Just describe the problem.")
 
     left, right = st.columns([1, 1], gap="large")
     with left:
-        st.subheader("🎙️ Report a breakdown")
+        st.subheader("Report a breakdown")
         machine_id = st.selectbox("Machine (optional — or scan its QR sticker)", ids, index=default,
                                   format_func=lambda i: "Not sure / other" if i is None else db.machine(i)["name"])
         streaming = st.toggle("Streaming transcription (Prisma realtime API)", value=True,
@@ -204,7 +204,7 @@ def render(settings: dict, machine_from_qr: str | None):
                     else:
                         _run(settings, audio=raw, suffix=suffix, machine_id=machine_id)
     with right:
-        st.subheader("🧪 Or try a sample call")
+        st.subheader("Or try a sample call")
         st.caption("Samples skip speech-to-text and don't use your live runs.")
         choice = st.selectbox("Sample", list(SAMPLES), label_visibility="collapsed")
         sample = SAMPLES[choice]
@@ -220,7 +220,7 @@ def render(settings: dict, machine_from_qr: str | None):
         st.divider()
         _show(r)
         if r.ticket and r.ticket.follow_up_questions and r.ticket_id:
-            st.markdown("#### ❓ Follow-up")
+            st.markdown("#### Follow-up")
             st.write(" · ".join(r.ticket.follow_up_questions))
             answer = st.audio_input("Answer by voice", key=f"followup_{r.ticket_id}")
             if answer is not None and st.button("Update ticket with answer") and can_go_live():

@@ -7,7 +7,7 @@ from ui.common import can_go_live, note_live_run
 
 
 def render(settings: dict):
-    st.subheader("🗣️ Ask your repair history")
+    st.subheader("Ask your repair history")
     st.markdown('Ask by voice, for example *"Pichhli baar compressor kab kharab hua tha?"* or '
                 '*"Is mahine kaunsi machine sabse zyada band hui?"*. Evon reads all past tickets for this factory '
                 "(it has a 128K-token context) and answers in your language.")

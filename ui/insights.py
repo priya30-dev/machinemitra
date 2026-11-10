@@ -9,7 +9,7 @@ from core.downtime import inr
 
 
 def render(settings: dict):
-    st.subheader("📊 Owner insights")
+    st.subheader("Owner insights")
     scope = st.radio("Show", ["This factory", "All factories"], horizontal=True)
     rows = db.list_tickets(factory_id=settings["factory"]["id"] if scope == "This factory" else None, limit=1000)
     if not rows:
@@ -44,7 +44,7 @@ def render(settings: dict):
     repeats = df.groupby("machine").size()
     repeats = repeats[repeats >= 2].sort_values(ascending=False)
     if len(repeats):
-        st.markdown("**🔁 Repeat faults — candidates for preventive maintenance**")
+        st.markdown("**Repeat faults — candidates for preventive maintenance**")
         for machine, n in repeats.items():
             st.markdown(f"- **{machine}**: {n} breakdowns")
     st.caption(f"Escalated calls: {int(df['escalated'].sum())} · data from this app's ticket database.")

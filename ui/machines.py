@@ -8,7 +8,7 @@ from core import db, qr
 
 
 def render(settings: dict):
-    st.subheader("🏷️ Machines & QR stickers")
+    st.subheader("Machines & QR stickers")
     st.markdown("Print a sticker for each machine. Scanning it opens MachineMitra with the machine already chosen, "
                 "so the owner only has to describe the problem — and every repair builds that machine's history.")
     base = st.text_input("App link to put in the QR codes", value=config._get("APP_URL", "http://localhost:8501"),

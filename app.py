@@ -10,7 +10,7 @@ from ui import ask, board, evaluation, insights, machines, report
 from ui.common import CSS
 from ui.theme import hero
 
-st.set_page_config(page_title="MachineMitra", page_icon="🛠️", layout="wide")
+st.set_page_config(page_title="MachineMitra", page_icon=None, layout="wide")
 st.markdown(CSS, unsafe_allow_html=True)
 
 LANG_HINTS = {
@@ -38,7 +38,7 @@ qr_factory = (db.machine(qr_machine) or {}).get("factory_id") if qr_machine else
 factory_ids = [f["id"] for f in directory["factories"]]
 
 with st.sidebar:
-    st.header("🏭 Your factory")
+    st.header("Your factory")
     factory = st.selectbox("Location (demo)", directory["factories"], format_func=lambda f: f["name"],
                            index=factory_ids.index(qr_factory) if qr_factory in factory_ids else 0)
     st.caption("Downtime cost — rough numbers are fine")
@@ -47,14 +47,14 @@ with st.sidebar:
     output = st.number_input("Production lost per hour (₹)", 0, 500000, 3000, step=500)
 
     st.divider()
-    st.header("⚙️ Call settings")
+    st.header("Call settings")
     lang_label = st.selectbox("Caller's language", list(LANG_HINTS))
     telephony = st.toggle("Simulate phone-line audio (8 kHz)", value=False,
                           help="Downsamples recordings to phone quality before sending them to Prisma.")
     speak = st.toggle("Speak replies with Timbre", value=True)
 
     st.divider()
-    st.header("🧠 Engines")
+    st.header("Engines")
     st.markdown("**Prisma v3.0** speech to text · **Timbre v3.0** voice")
     if evon_status():
         st.success("Evon v3.3 online (self-hosted)")
@@ -71,8 +71,8 @@ settings = {
 
 hero()
 
-tabs = st.tabs(["📞 Report", "🧰 Technician board", "🏷️ Machines & QR", "📊 Insights", "🗣️ Ask history",
-                "🧪 Evaluation", "ℹ️ How it works"])
+tabs = st.tabs(["Report", "Technician board", "Machines & QR", "Insights", "Ask history",
+                "Evaluation", "ℹHow it works"])
 with tabs[0]:
     report.render(settings, qr_machine)
 with tabs[1]:
@@ -90,7 +90,7 @@ with tabs[6]:
 digraph {
   rankdir=LR; bgcolor="transparent"; edge [color="#5B6B85", penwidth=1.4];
   node [shape=box, style="rounded,filled", fillcolor="#0E1638", color="#5B8CFF", fontcolor="#E6EAF2", fontname="Helvetica"];
-  call [label="🎙️ Owner's call\\n(any of 10 languages)"];
+  call [label="Owner's call\\n(any of 10 languages)"];
   prisma [label="Gnani Prisma v3.0\\nspeech to text\\n(REST or realtime)"];
   noise [label="Noise meter\\n(SNR)", fillcolor="#1B2238", color="#A78BFA"];
   safety [label="Safety rules\\n(before any AI)", fillcolor="#3A1620", color="#FF4D5E"];
